@@ -1,0 +1,187 @@
+[Settings]
+; This is the documentation guide for the settings available in Trade in Gems - Loot As Currency Edition (LACE) v3.0
+
+; it is recommended to save your game before editing any settings in the .ini file located in SKSE\Plugins\TradeInGemsLACE\TradeInGemsLACE.ini
+; the settings file can be refreshed by game boot, game load, new games, mod menu and console command.
+
+; =============================
+; [HOTKEYS & MOD STARTUP STATE]
+; =============================
+; bEnabled defines if the mod's trading mode will be on or off when you boot the game or a new game is started, it isn't an off switch for the Mod! 
+; to completely disable the mod, disable it in your mod loader, or move the mod folder elsewhere. even though it isn't a true mod off switch,
+; disabling trading mode reduces most of the calculations done by this mod to the bare minimum and reveals trade items for looting and buying.
+bEnabled = true
+
+; DirectX Scan Codes for 2 hotkeys the mod has, with some suggestions
+; 	13  = Equals (=) [Current Default for uToggleKey]
+; 	26  = Left Bracket ([)
+; 	27  = Right Bracket (])
+; 	41  = Tilde (~)
+; 	55  = Numpad Asterisk (*)
+; 	34  = G [Current Default for uWealthKey]
+; 	21  = Y 
+; 	46  = C
+;	181 = / (numpad)
+;	55 = * (numpad)
+; What they do:
+; 	uToggleKey controls the item trading mode activation during game, being intended to use multiple times during play to switch between item trading and vanilla behavior.
+; 	uWealthKey brings some information about variables of interest the mod is dealing with, displaying it in a way you can adjust with other settings.
+; 	it also refreshes the mod data about the game values for fBarterMin and fBarterMax (core barter price variables), this is for support in case any mod edits these during play.
+;	currently it also reloads the settings file, but eventually this feature will be moved to a console command.
+uToggleKey = 13
+uWealthKey = 34
+
+; =============================
+; [ECONOMY & GAMEPLAY SETTINGS]
+; =============================
+; Item worth calculation modes
+; 0 = Currency Mode (Buy Prices)
+; 1 = Barter Mode (Sell Prices with modifier)
+; 2 = Fixed Mode (Base Prices) 
+; Currency Mode tries to make items have the same value as the one needed to buy them from the NPC you are trading with. Its worth calculation Min is 105% of Base, just like buy prices.
+; Barter Mode is vanilla-like sell prices with a custom modifier setting. Its worth calculation Max is 100% of Base, just like sell prices are in vanilla.
+; Fixed Mode is for keeping the currency items valued at 100% of their current base prices, unchanged by modifiers that don't affect base prices, and is the fastest mode for calculations.
+iItemValueMode = 0
+
+; Sorting priority modes for spending trade items during purchases:
+; 0 = Worst Value/Weight First (Spends worst V/W ratio items first) - Default
+; 1 = Best Value/Weight First (Spends best V/W ratio items first)
+; 2 = Heaviest First (Spends heaviest items for trading first)
+; 3 = Lightest First (Spends lightest items for trading first)
+; 4 = Cheapest First (Spends cheaper items first)
+; 5 = Most Expensive First (Spends more valuable items first)
+; 6 = No Sorting (Preserves inventory load order sequence)
+iSpendingOrderMode = 0
+
+; setting that multiplies the calculated value of an item in Barter Mode.
+fBarterModeMultiplier = 1.0
+
+; Loot-First spending priority setting to support those who play with default 0 weight gold or want to try custom lists that include items with worse value/weight than gold.
+; true  = transactions will automatically deduct items from your patched items first, real gold coins are only spent as a last resort if items run dry.
+; false = default gold-first spending priority mode, item trading only happens when you run out of real gold coins.
+bSpendItemsBeforeGold = true
+
+; challenge mode for the LACE framework, making coins bound by an ancient, flesh-consuming curse made against the Dragonborn, that triggers when they are used in dialogue or Barter. 
+; this should be paired with bSpendItemsBeforeGold = true to use items as a safety barrier against real gold coin spending, unless you want a true cursed experience.
+; warning: disabling trading mode won't help against the curse. Difficulty can be increased with Barter Mode and a multiplier below 1.0.
+; true  = giving gold coins drains a portion of your character's life force, causing health damage
+; false = disabled, spending gold coins does not inflict health damage to your character (Default)
+bCursedGoldMode = false
+
+; Setting that includes character's Speechcraft power modifiers (potions, enchants, blessings).
+; *due to how currency mode works, activating this in it will reduce item worth with higher modifiers, this can help making the mode more balanced if you also buy them a lot.
+bIncludePowerModifiers = true
+
+; Setting that includes Speechcraft skill perks (Haggling, Allure, etc) into item valuation. Also supports many perk overhauls and economy affecting mods that use Perk Entries.
+bIncludePerkModifiers = true
+
+; Prevents ghost gold injection (when items are hidden and you get gold for trading) when interacting with active followers.
+bBlockFollowerInjection = true
+
+; Injects ghost gold the moment you interact with an NPC, right before dialogue. Ensures dialogue checks such as hiring mercenaries evaluate your full converted traded item wealth
+; immediately on the first talk. This setting works by activating a parallel event handler that triggers when you press the activate hotkey (the one used to talk to npcs and pick
+; items or open chests) to the main slower one that activates during dialogue. Deactivating it will reduce this mod's footprint from that hotkey's usage, but it will make NPCs not always 
+; know when you have enough currency on first interaction dialogues, plus it reduces the chances an injection attempt will be successful, as the number of attempts will reduce.
+bEarlyGoldInjection = true
+
+; Form ID of the base gold currency item in Hex format. Default is 0x0000000F (Vanilla Septim). Shouldn't be modified, but it's there for compatibility and debug.
+sGoldFormID = 0x0000000F
+
+; ========================
+; [ASSET & CURRENCY NAMES]
+; ========================
+; sCurrencyName: Overrides the tracking name printed inside the notifications.
+; 	Example names: Loot, Gems, Goods, Sweetrolls, Skooma, Currency, Ingots, Scrap, Rupees, Assets, Cheese Wheels, Dragon Bones, Hoarded Trash, etc.
+sCurrencyName = Loot
+; Display names and shorthand abbreviations used for gold throughout UI notifications.
+sLabelGold     = Gold
+sLabelGoldAbbr = g
+
+; ==============================================================================
+; [COLORS AND NOTIFICATION DISPLAY CUSTOMIZATION]
+; ==============================================================================
+; Wealth Hotkey and Notification Customization Hex Colors (Provide pure hex text without the '#' character)
+; Defaults: 00FF00 | FF3333 | FFD700 | 00BFFF | 00FF00 | FF8C00 | A9A9A9
+; Common color reference guides for your layout:
+;   00FF00 = Neon Green     |   FF3333 = Soft Red       |   FFD700 = Gold/Yellow
+;   00BFFF = Deep Sky Blue  |   FF8C00 = Dark Orange    |   A9A9A9 = Dark Gray
+;   FFFFFF = Pure White     |   E066FF = Medium Orchid  |   00FFFF = Cyan
+; Darker but cool color palette alternatives (Low-saturation):
+;   8B0000 = Dark Red       |   006400 = Dark Green     |   B8860B = Dark Goldenrod/Yellow
+; Gemstone color palette (Official gem-named color codes):
+;   E0115F = Ruby Dust      |   50C878 = Emerald Green  |   0F52BA = Sapphire Blue
+;   9966CC = Amethyst       |   B9F2FF = Diamond Ice    |   FFB7C5 = Morganite Pink
+sColorStatusActive   = 00FF00
+sColorStatusInactive = FF3333
+sColorGoldAsset      = FFD700
+sColorLootAsset      = 00BFFF
+sColorTotalAsset     = 00FF00
+sColorExpectedValue  = FF8C00
+sColorSystemHeader   = A9A9A9
+
+; iItemNotificationMode is used to configure the display mode of traded item notifications.
+; 0 = Fires a notification for every single distinct traded item, expect notifications for a long time when bulk trading
+; 1 = Lists just the first few items in a singular notification, font can look small if item names are big
+; 2 = Classic Message Box popup with a larger item limit and some safety measures to preserve the layout
+; 3 = Silences on-screen traded item alerts and dumps them straight to the console log, open it to check the condensed entries list
+iItemNotificationMode = 0
+
+; Wealth Hotkey Visibility Options (true or 1 = Show row, false or 0 = Hide row)
+; Recommended default settings (status: true - to check general settings, expected: false - when active, huge assist with picking the most 
+; fitting mode/multiplier for your playstyle or current run) disable both if you only want a single wealth notification with hotkey press
+bShowModeStatus    = true
+bShowExpectedValue = false
+
+
+; Toggle for troubleshooting and debug notifications in console and screen corner
+bEnableDebugNotifications = false
+
+[Messages]
+; Any strings that appear in this topic can be edited, but "{}" symbols shouldn't be added or erased. as it may break formatting or color presets.
+; I set defaults, so if your changes aren't loading or they suddenly disappear after settings reload, you may have broken a string formatting.
+; Without these fallbacks, the attempts to read the broken strings would lead to CTDs.
+; If your notifications break (such as printing hexcodes) instead of using the fallbacks, you need to fix the ordering of "{}" and "<font color='#{}'>" (this order can't be changed).
+
+; You can rework the color scheme by isolating the <font color='#{}'></font> blocks (not deleting them), and add any amount of hardcoded blocks.
+; Some working rainbow notifications for trading created with this method:
+; sMsgTradedPerItem = <font color='#FF3333'>T</font><font color='#FF9933'>r</font><font color='#FFFF33'>a</font><font color='#33FF33'>d</font><font color='#33CCFF'>e</font><font color='#CC66FF'>d</font> {}<font color='#{}'>x</font> {}<font color='#{}'></font>
+; sMsgChangeReceived = <font color='#FF3333'>C</font><font color='#FF5D33'>h</font><font color='#FF8733'>a</font><font color='#FFB133'>n</font><font color='#FFDB33'>g</font><font color='#FFFF33'>e</font> <font color='#C2FF33'>R</font><font color='#85FF33'>e</font><font color='#48FF33'>c</font><font color='#33FF6B'>e</font><font color='#33FFA5'>i</font><font color='#33FFDF'>v</font><font color='#33E0FF'>e</font><font color='#33A2FF'>d</font><font color='#3364FF'>:</font> <font color='#{}'></font><font color='#{}'>{}{}</font><font color='#4D33FF'>.</font> <font color='#7D33FF'>W</font><font color='#AD33FF'>a</font><font color='#DD33FF'>s</font><font color='#FF33F5'>t</font><font color='#FF33B5'>e</font><font color='#FF3375'>d</font> <font color='#{}'></font><font color='#{}'>{}{}.</font>
+; sMsgNoChange = <font color='#FF3333'>N</font><font color='#FF5533'>o</font> <font color='#FF7733'>C</font><font color='#FF9933'>h</font><font color='#FFBB33'>a</font><font color='#FFDD33'>n</font><font color='#FFFF33'>g</font><font color='#D4FF33'>e</font> <font color='#AAFF33'>R</font><font color='#77FF33'>e</font><font color='#33FF33'>c</font><font color='#33FF77'>e</font><font color='#33FFBB'>i</font><font color='#33FFFF'>v</font><font color='#33BBFF'>e</font><font color='#3377FF'>d</font><font color='#3333FF'>.</font> <font color='#6633FF'>W</font><font color='#9933FF'>a</font><font color='#CC33FF'>s</font><font color='#FF33FF'>t</font><font color='#FF33CC'>e</font><font color='#FF3399'>d</font> <font color='#{}'></font><font color='#{}'>{}{}.</font>
+; You can input symbols such as 💎, as this file has UTF-8 format. For them to be displayed, your installed font in Skyrim must also include them.
+
+; Cursed Gold Mode's warning if you trigger its feature and survive (if you are defeated, HUD is hidden)
+sMsgCursedGold          = <font color='#{}'>Cursed </font><font color='#{}'>{}</font><font color='#{}'> burns your flesh!</font>
+
+; Entry for Item Trade Notification Mode 0
+sMsgTradedPerItem       = <font color='#{}'>Traded {}x </font><font color='#{}'>{}</font>
+
+; Entries for Item Trade Notification Mode 1
+sMsgTruncatedHeader     = <font color='#{}'>Traded: </font>{}
+sMsgTruncatedMore       =  <font color='#{}'>and {} more...</font>
+
+; Entries for Item Trade Notification Mode 2, the limiter is used to set a minimum fixed width for the message box that appears
+sMsgMsgBoxHeader        = {} Traded 
+sMsgMsgBoxLimiter       = ________________________________
+sMsgMsgBoxTruncated     = ...and {} more types of {}.
+
+; Displayed texts for uToggleKey press
+sMsgTradingStatusMsg    = <font color='#{}'>Cannot revalue your </font><font color='#{}'>{}</font><font color='#{}'> stash while occupied.</font>
+sMsgTradingStatusToggle = <font color='#{}'>{}</font><font color='#{}'> Trading: </font>{}
+
+; Displayed texts for uWealthKey press
+sMsgAssetSummary        = <font color='#{}'>{}: {}</font> <font color='#{}'>|</font> <font color='#{}'>{}: {}</font> <font color='#{}'>|</font> <font color='#{}'>Total: {}</font>
+sMsgExpectedValue       = <font color='#{}'>Expected {} Value: {}%</font>
+sMsgFrameworkStatus     = <font color='#{}'>{} Trading: {} </font><font color='#{}'>| Mode: {}, </font><font color='#{}'>{}</font><font color='#{}'> 1st | Speech {}</font>
+
+; Change related messages if your last traded item stack exceeds the amount required for the payment.
+sMsgChangeReceived      = <font color='#{}'>Change Received: </font><font color='#{}'>{}{}</font><font color='#{}'>. Wasted </font><font color='#{}'>{}{}</font>.
+sMsgNoChange            = <font color='#{}'>No Change Received. Wasted </font><font color='#{}'>{}{}</font>.
+
+; Entries for the labels the mod uses for its notifications.
+sLabelOn                = ON
+sLabelOff               = OFF	
+sLabelActive            = ACTIVE
+sLabelInactive          = INACTIVE
+sLabelModeCurrency      = Currency
+sLabelModeBarter        = Barter
+sLabelModeFixed         = Fixed

@@ -1,0 +1,76 @@
+=================================================================================
+[TRADE IN GEMS - LOOT AS CURRENCY EDITION (LACE) v3.0.0 - CONSOLE COMMANDS GUIDE]
+=================================================================================
+This file documents the in-game console commands available for Trade in Gems (LACE), introduced in v2.3.0.
+You can use "help tig-lace" in console to display the structure of the commands you can use, detailed below.
+
+=====================
+[Quick overview list]
+=====================
+The mod installs a single console command with 6 different subcommands attached, each with their own use:
+
+Command/Subcommand        Needs a target?   Function
+============================================================================================
+lace ini                  No               Reloads INI settings file without loading a game
+lace rescan               No               Re-scans and reloads item/gem patch lists
+lace add                  Optional         Patches an item into ConsoleAdded.txt
+lace toggle               No               Toggles trading mode ON or OFF
+lace wealth               No               Displays wealth status + mode notifications
+lace settle               Yes              Triggers ghost gold settlement on target NPC
+
+==========================
+[Command detail and usage]
+==========================
+To use the commands, open your console, type 'lace' or 'tig-lace' followed by the subcommand name and press enter.
+Some commands may have special usage rules, and they will send a guiding notification if used incorrectly.
+
+1. lace ini
+     Reads and re-applies all settings, colors, and string formats from 
+     TradeInGemsLACE.ini directly while the game is running. You can't 
+     reload settings through it while gold is injected.
+
+2. lace rescan
+     Clears the internal item registry and performs a fresh scan,
+     comparing the EditorIDs in your active load order against the
+     entries in your patch folder to repopulate the registry. Each
+     attempt restarts the SKSE log, and can be verified there.
+
+3. lace add | lace add <EditorID>
+     Patches an item into the framework's memory during play. You can provide the EditorID or just 
+     select the item while in the console and run "lace add", thanks to powerofthree's Tweaks. 
+     The entry is added to a file in Patches folder called ConsoleAdded.txt.
+     If you want to remove added entries, delete their lines in the file, and run "lace rescan".
+
+4. lace toggle
+     Toggles item trading mode ON or OFF without needing to press your assigned uToggleKey hotkey.  
+
+5. lace wealth
+     Triggers the wealth and current modes notification, without needing to press your assigned uWealthKey hotkey.
+     
+6. lace settle
+     Manually triggers the trade settlement logic (removing any injected ghost 
+     gold, removing the equivalent in trade items from inventory and unhiding them).
+     It will attempt to use the target actor for trade settle, won't do
+     anything if you have no injected ghost gold, and also can't be used in menus.
+     Mostly a debug tool.
+
+========================
+[Further considerations]
+========================
+These commands are implemented by rewriting a single console command from the hardcoded 
+base command array to serve as the master 'tig-lace' command. If a mod has already replaced 
+one of the candidate commands, it attempts to pick another command from the list below. 
+If you have a mod with the same replacement method and lost one of its commands, place 
+Trade in Gems NG - LACE with lower load priority so it will attempt to pick another sacrificial 
+target after the conflict target was already replaced. The attempt is registered in SKSE log
+folder, once per game boot.
+
+Current list for sacrifice targets (top targets have higher priority):          
+   - StartAllQuests          # floods your journal, starting all quests in the game
+   - CompleteAllQuestStages  # completes all quests in the game, not just the ones in your journal
+   - ToggleFogOfWar          # makes your local map black, markers are unchanged and seems to cause bugs     
+   - ToggleTrees             # keeps culling trees while it's active  
+   - ToggleWaterSystem       # disables seeing water from above while it's active  
+   - ToggleWireframe         # renders wireframes on things               
+   - ToggleSky               # disables the sky and darken the land, makes ToggleWireFrame more interesting
+   - CenterOnWorld           # cell teleport command, more precise than coc but requires coordinates
